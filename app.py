@@ -307,13 +307,13 @@ def borrow_book(id):
     db.session.commit()
 
     try:
-    msg = Message(
+        msg = Message(
         "📚 SCHOOL OF MINES DIGITAL LIBRARY - Borrow Confirmation",
         sender=app.config['MAIL_USERNAME'],
         recipients=[student_email]
     )
 
-    msg.html = f"""
+        msg.html = f"""
     <h2>📚 SCHOOL OF MINES DIGITAL LIBRARY</h2>
     <p>Hello <b>{student_name}</b>,</p>
     <ul>
@@ -328,10 +328,10 @@ def borrow_book(id):
     </p>
     """
 
-    mail.send(msg)
+        mail.send(msg)
 
 except Exception as e:
-    print("Email Error:", e)
+    print("Email Error:", e)s
 
 return redirect("/") 
 
