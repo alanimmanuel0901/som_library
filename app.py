@@ -307,7 +307,7 @@ def borrow_book(id):
     db.session.commit()
 
     try:
-    msg = Message(
+        smsg = Message(
         "📚 SCHOOL OF MINES DIGITAL LIBRARY - Borrow Confirmation",
         sender=app.config['MAIL_USERNAME'],
         recipients=[student_email]
@@ -332,9 +332,8 @@ def borrow_book(id):
 
 except Exception as e:
     print("Email Error:", e)
-    pass
 
-return redirect("/")
+return redirect("/") 
 
 # ===========================
 # CREATE DATABASE
