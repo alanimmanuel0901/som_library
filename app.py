@@ -298,14 +298,14 @@ def borrow_book(id):
     db.session.commit()
 
     try:
-    print("MAIL USERNAME:", app.config['MAIL_USERNAME'])
-    print("MAIL PASSWORD:", app.config['MAIL_PASSWORD'])
+        print("MAIL USERNAME:", app.config['MAIL_USERNAME'])
+        print("MAIL PASSWORD:", app.config['MAIL_PASSWORD'])
 
-    msg = Message(
-        "📚 SCHOOL OF MINES DIGITAL LIBRARY - Borrow Confirmation",
-        sender=app.config['MAIL_USERNAME'],
-        recipients=[student_email]
-    )
+        msg = Message(
+            "📚 SCHOOL OF MINES DIGITAL LIBRARY - Borrow Confirmation",
+            sender=app.config['MAIL_USERNAME'],
+            recipients=[student_email]
+        )
 
         msg.html = f"""
         <h2>📚 SCHOOL OF MINES DIGITAL LIBRARY</h2>
@@ -316,7 +316,10 @@ def borrow_book(id):
             <li><b>Due Date:</b> {formatted_due}</li>
         </ul>
         <p>Please return before due date.</p>
-        <p>Regards,<br><b>SCHOOL OF MINES DIGITAL LIBRARY</b></p>
+        <p>
+        Regards,<br>
+        <b>SCHOOL OF MINES DIGITAL LIBRARY</b>
+        </p>
         """
 
         mail.send(msg)
