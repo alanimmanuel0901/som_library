@@ -324,9 +324,8 @@ def borrow_book(id):
         <p>Please return before due date.</p>
         <b>SCHOOL OF MINES DIGITAL LIBRARY</b>
         """
-
-        mail.send(msg)
-
+# mail.send(msg)
+        
     except Exception as e:
         print("Email Error:", e)
 
