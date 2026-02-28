@@ -307,29 +307,38 @@ def borrow_book(id):
     db.session.commit()
 
     try:
-        msg = Message(
-            "📚 SCHOOL OF MINES DIGITAL LIBRARY - Borrow Confirmation",
-            sender=app.config['MAIL_USERNAME'],
-            recipients=[student_email]
-        )
+    msg = Message(
+        "📚 SCHOOL OF MINES DIGITAL LIBRARY - Borrow Confirmation",
+        sender=app.config['MAIL_USERNAME'],
+        recipients=[student_email]
+    )
 
-        msg.html = f"""
-        <h2>📚 SCHOOL OF MINES DIGITAL LIBRARY</h2>
-        <p>Hello <b>{student_name}</b>,</p>
-        <ul>
-            <li><b>Book:</b> {book.title}</li>
-            <li><b>Borrow Date:</b> {formatted_borrow}</li>
-            <li><b>Due Date:</b> {formatted_due}</li>
-        </ul>
-        <p>Please return before due date.</p>
-        <b>SCHOOL OF MINES DIGITAL LIBRARY</b>
-        """
-# mail.send(msg)
-        
-    except Exception as e:
-        print("Email Error:", e)
+    msg.html = f"""
+    <h2>📚 SCHOOL OF MINES DIGITAL LIBRARY</h2>
 
-    return redirect("/")
+    <p>Hello <b>{student_name}</b>,</p>
+
+    <ul>
+        <li><b>Book:</b> {book.title}</li>
+        <li><b>Borrow Date:</b> {formatted_borrow}</li>
+        <li><b>Due Date:</b> {formatted_due}</li>
+    </ul>
+
+    <p>Please return before due date.</p>
+
+    <p>
+    Regards,<br>
+    <b>SCHOOL OF MINES DIGITAL LIBRARY</b>
+    </p>
+    """
+
+    mail.send(msg)
+
+except Exception as e:
+    print("Email Error:", e)
+    pass
+
+return redirect("/")
 
 # ===========================
 # CREATE DATABASE
