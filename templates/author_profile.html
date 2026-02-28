@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Author Profile</title>
+</head>
+
+<body style="font-family: Arial; background:#f2f6ff;">
+
+<h2 style="color:#003366;">Author Profile</h2>
+
+<div style="background:white;padding:20px;margin:20px;border-radius:10px;">
+
+    <h2>{{ author.full_name }}</h2>
+
+    <p><b>Date of Birth:</b> {{ author.date_of_birth }}</p>
+    <p><b>Country:</b> {{ author.country }}</p>
+
+    <hr>
+
+    <h3>Biography</h3>
+    <p>{{ author.biography }}</p>
+
+    <h3>Achievements</h3>
+    <p>{{ author.achievements }}</p>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>All Authors</title>
+    <style>
+        body { font-family: Arial; background: #f4f6f9; padding: 40px; }
+        table { width: 100%; border-collapse: collapse; background: white; }
+        th, td { padding: 12px; border-bottom: 1px solid #ddd; }
+        th { background: #2c3e50; color: white; }
+        a { text-decoration: none; padding: 6px 12px; border-radius: 5px; }
+        .edit { background: #27ae60; color: white; }
+        .back { background: #3498db; color: white; }
+    </style>
+</head>
+<body>
+
+<h2>All Authors</h2>
+
+<table>
+<tr>
+    <th>ID</th>
+    <th>Name</th>
+    <th>DOB</th>
+    <th>Country</th>
+    <th>Action</th>
+</tr>
+
+{% for author in authors %}
+<tr>
+    <td>{{ author.id }}</td>
+    <td>{{ author.full_name }}</td>
+    <td>{{ author.date_of_birth }}</td>
+    <td>{{ author.country }}</td>
+    <td>
+        <a class="edit" href="/admin/edit-author/{{ author.id }}">Edit</a>
+    </td>
+</tr>
+{% endfor %}
+</table>
+
+<br>
+<a class="back" href="/admin">Back to Admin</a>
+
+</body>
+</html>

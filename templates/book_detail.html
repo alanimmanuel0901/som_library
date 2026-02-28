@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ book.title }}</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #4e73df, #1cc88a);
+        }
+
+        .container {
+            width: 80%;
+            margin: 50px auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            padding: 40px;
+            display: flex;
+            gap: 40px;
+        }
+
+        .image img {
+            width: 280px;
+            border-radius: 10px;
+        }
+
+        .details {
+            flex: 1;
+        }
+
+        h2 {
+            margin-top: 0;
+            font-size: 28px;
+        }
+
+        .available {
+            color: green;
+            font-weight: bold;
+        }
+
+        .not-available {
+            color: red;
+            font-weight: bold;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            margin-top: 15px;
+            padding: 10px 20px;
+            background: #4e73df;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #2e59d9;
+        }
+
+        .back-btn {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background: #858796;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+
+        .back-btn:hover {
+            background: #60616f;
+        }
+
+        hr {
+            margin: 25px 0;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <!-- Book Image -->
+    <div class="image">
+        {% if book.cover_image %}
+            <img src="{{ url_for('static', filename='uploads/' + book.cover_image) }}">
+        {% else %}
+            <p>No Image Available</p>
+        {% endif %}
+    </div>
+
+    <!-- Book Details -->
+    <div class="details">
+
+        <h2>{{ book.title }}</h2>
+
+        <p><strong>Author:</strong>
+            {% if book.author %}
+                {{ book.author.full_name }}
+            {% else %}
+                Not Assigned
+            {% endif %}
+        </p>
+
+        <p><strong>Description:</strong><br>
+            {{ book.description }}
+        </p>
+
+        <p><strong>Available Quantity:</strong>
+            {% if book.quantity > 0 %}
+                <span class="available">{{ book.quantity }} Available</span>
+            {% else %}
+                <span class="not-available">Out of Stock</span>
+            {% endif %}
+        </p>
+
+        <hr>
+
+        <!-- Borrow Section -->
+        <h3>Borrow This Book</h3>
+
+        <p><strong>Borrow Date:</strong> {{ borrow_date }}</p>
+        <p><strong>Due Date:</strong> {{ due_date }}</p>
+
+        {% if book.quantity > 0 %}
+        <form method="POST" action="/borrow/{{ book.id }}">
+            <input type="text" name="student_name" placeholder="Enter Your Name" required>
+            <input type="email" name="student_email" placeholder="Enter Your Email" required>
+            <button type="submit">Borrow Book</button>
+        </form>
+        {% else %}
+            <p class="not-available">This book is currently unavailable.</p>
+        {% endif %}
+
+        <a href="/" class="back-btn">Back to Home</a>
+
+    </div>
+
+</div>
+
+</body>
+</html>

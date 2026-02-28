@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Reminder Dashboard</title>
+<style>
+body{
+font-family:Arial;
+background:linear-gradient(120deg,#fff3e0,#ffffff);
+padding:40px;
+}
+.box{
+background:white;
+padding:20px;
+margin-bottom:15px;
+border-radius:10px;
+box-shadow:0 2px 8px rgba(0,0,0,0.1);
+}
+h1{color:#e65100;}
+</style>
+</head>
+<body>
+
+<h1>🔔 Books Due Tomorrow</h1>
+
+{% for r in records %}
+<div class="box">
+<b>Email:</b> {{ r.student_email }} <br>
+<b>Book:</b> {{ r.book.title }} <br>
+<b>Due:</b> {{ r.due_date }}
+</div>
+{% endfor %}
+
+</body>
+</html>

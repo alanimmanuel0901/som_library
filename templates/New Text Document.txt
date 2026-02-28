@@ -1,0 +1,8 @@
+<h1>SCHOOL OF MINES DIGITAL LIBRARY</h1>
+
+{% for book in books %}
+    <div>
+        <h3>{{ book.title }}</h3>
+        <p>{{ book.description }}</p>
+    </div>
+{% endfor %}

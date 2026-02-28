@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h1>Explore Books</h1>
+
+<form method="GET">
+    <input type="text" name="search" placeholder="Search books...">
+</form>
+
+<br>
+
+<div style="display:grid; grid-template-columns: repeat(auto-fit,minmax(250px,1fr)); gap:20px;">
+
+{% for book in books %}
+    <div class="card">
+        {% if book.cover_image %}
+            <img src="{{ url_for('static', filename='uploads/' + book.cover_image) }}" 
+                 style="width:100%; border-radius:10px;">
+        {% endif %}
+
+        <h3>{{ book.title }}</h3>
+        <p><b>Author:</b> {{ book.author.full_name }}</p>
+        <p><b>Available:</b> {{ book.quantity }}</p>
+
+        <a href="/book/{{ book.id }}">
+            <button>View Details</button>
+        </a>
+    </div>
+{% endfor %}
+
+</div>
+
+{% endblock %}

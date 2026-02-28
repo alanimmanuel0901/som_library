@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Add Author</title>
+</head>
+
+<body style="font-family: Arial; background:#f2f6ff;">
+
+<h2>Add New Author</h2>
+
+<form method="POST" action="/admin/save-author">
+
+    <label>Full Name</label><br>
+    <input type="text" name="full_name"><br><br>
+
+    <label>Date of Birth</label><br>
+    <input type="text" name="date_of_birth"><br><br>
+
+    <label>Country</label><br>
+    <input type="text" name="country"><br><br>
+
+    <label>Biography</label><br>
+    <textarea name="biography"></textarea><br><br>
+
+    <label>Achievements</label><br>
+    <textarea name="achievements"></textarea><br><br>
+
+    <button type="submit">Save Author</button>
+
+</form>
+
+</body>
+</html>

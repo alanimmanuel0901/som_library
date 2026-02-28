@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Add Book</title>
+</head>
+
+<body style="font-family: Arial; background:#f2f6ff;">
+
+<h2>Add New Book</h2>
+
+<form method="POST" action="/admin/save-book" enctype="multipart/form-data">
+
+<label>Book Title</label><br>
+<input type="text" name="title"><br><br>
+
+<label>Description</label><br>
+<textarea name="description"></textarea><br><br>
+
+<label>Quantity</label><br>
+<input type="number" name="quantity"><br><br>
+
+<label>Select Author</label><br>
+<select name="author_id">
+{% for a in authors %}
+<option value="{{ a.id }}">{{ a.full_name }}</option>
+{% endfor %}
+</select>
+
+<br><br>
+
+<label>Book Cover Image</label><br>
+<input type="file" name="cover_image"><br><br>
+
+<button type="submit">📚 Save Book</button>
+
+</form>
+
+</body>
+</html>

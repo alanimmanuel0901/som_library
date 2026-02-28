@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Authors - SCHOOL OF MINES LIBRARY</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: linear-gradient(to right, #1e3c72, #2a5298);
+            color: white;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px 30px;
+            background: rgba(0,0,0,0.3);
+        }
+
+        .navbar h2 {
+            margin: 0;
+        }
+
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            margin-left: 20px;
+            font-weight: bold;
+        }
+
+        .container {
+            padding: 30px;
+        }
+
+        .add-btn {
+            display: inline-block;
+            padding: 10px 15px;
+            background: #00c6ff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            background: white;
+            color: black;
+            border-collapse: collapse;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: center;
+        }
+
+        th {
+            background: #2a5298;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background: #f2f2f2;
+        }
+
+        .edit-btn {
+            background: #28a745;
+            color: white;
+            padding: 6px 10px;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+
+        .empty {
+            text-align: center;
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- NAVBAR -->
+    <div class="navbar">
+        <h2>SCHOOL OF MINES LIBRARY - AUTHORS</h2>
+        <div>
+            <a href="/admin/dashboard">Dashboard</a>
+            <a href="/admin/books">View Books</a>
+            <a href="/logout">Logout</a>
+        </div>
+    </div>
+
+    <div class="container">
+
+        <a class="add-btn" href="/admin/add-author">+ Add Author</a>
+
+        {% if authors %}
+        <table>
+            <tr>
+                <th>Full Name</th>
+                <th>Date of Birth</th>
+                <th>Country</th>
+                <th>Biography</th>
+                <th>Achievements</th>
+                <th>Action</th>
+            </tr>
+
+            {% for author in authors %}
+            <tr>
+                <td>{{ author.full_name }}</td>
+                <td>{{ author.date_of_birth }}</td>
+                <td>{{ author.country }}</td>
+                <td>{{ author.biography }}</td>
+                <td>{{ author.achievements }}</td>
+                <td>
+                    <a class="edit-btn" href="/admin/edit-author/{{ author.id }}">
+                        Edit
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+
+        {% else %}
+            <div class="empty">
+                <h3>No Authors Added Yet</h3>
+            </div>
+        {% endif %}
+
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Borrow History</title>
+
+<style>
+body{
+font-family:Arial;
+background:#f4f6f9;
+padding:30px;
+}
+
+table{
+width:100%;
+background:white;
+border-collapse:collapse;
+}
+
+th, td{
+padding:12px;
+border:1px solid #ddd;
+}
+
+th{
+background:#3498db;
+color:white;
+}
+</style>
+
+</head>
+<body>
+
+<h2>📊 Borrow History</h2>
+
+<a href="/admin">⬅ Back to Admin</a>
+
+<table>
+
+<tr>
+<th>Book</th>
+<th>Student</th>
+<th>Borrow Date</th>
+<th>Return Date</th>
+</tr>
+
+{% for b in borrows %}
+<tr>
+<td>{{ b.book.title }}</td>
+<td>{{ b.student_name }}</td>
+<td>{{ b.borrow_date }}</td>
+<td>{{ b.return_date }}</td>
+</tr>
+{% endfor %}
+
+</table>
+
+</body>
+</html>

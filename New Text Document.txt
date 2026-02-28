@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Reminder Dashboard</title>
+
+<style>
+body{
+font-family:Arial;
+background:#f4f6f9;
+padding:30px;
+}
+
+.card{
+background:white;
+padding:20px;
+margin:15px 0;
+border-radius:10px;
+box-shadow:0px 2px 8px rgba(0,0,0,0.1);
+}
+</style>
+
+</head>
+<body>
+
+<h2>🔔 Books Due Tomorrow ({{ tomorrow }})</h2>
+
+<a href="/admin">⬅ Back to Admin</a>
+
+{% for b in borrows %}
+<div class="card">
+<h3>{{ b.book.title }}</h3>
+<p><b>Student:</b> {{ b.student_name }}</p>
+<p><b>Return Date:</b> {{ b.return_date }}</p>
+</div>
+{% else %}
+<p>No reminders for tomorrow.</p>
+{% endfor %}
+
+</body>
+</html>

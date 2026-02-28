@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Edit Author - SCHOOL OF MINES LIBRARY</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: linear-gradient(to right, #1e3c72, #2a5298);
+            color: white;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px 30px;
+            background: rgba(0,0,0,0.3);
+        }
+
+        .navbar h2 {
+            margin: 0;
+        }
+
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            margin-left: 20px;
+            font-weight: bold;
+        }
+
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+        }
+
+        .form-box {
+            background: white;
+            color: black;
+            padding: 30px;
+            width: 500px;
+            border-radius: 10px;
+        }
+
+        .form-box h2 {
+            text-align: center;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        textarea {
+            height: 80px;
+            resize: vertical;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background: #2a5298;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .back-btn {
+            display: inline-block;
+            margin-top: 15px;
+            text-decoration: none;
+            color: #2a5298;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- NAVBAR -->
+    <div class="navbar">
+        <h2>SCHOOL OF MINES LIBRARY - EDIT AUTHOR</h2>
+        <div>
+            <a href="/admin/dashboard">Dashboard</a>
+            <a href="/admin/authors">View Authors</a>
+            <a href="/logout">Logout</a>
+        </div>
+    </div>
+
+    <div class="container">
+
+        <div class="form-box">
+
+            <h2>Edit Author</h2>
+
+            <form method="POST" action="/admin/update-author/{{ author.id }}">
+
+                <label>Full Name</label>
+                <input type="text" name="full_name" 
+                       value="{{ author.full_name }}" required>
+
+                <label>Date of Birth</label>
+                <input type="text" name="date_of_birth" 
+                       value="{{ author.date_of_birth }}">
+
+                <label>Country</label>
+                <input type="text" name="country" 
+                       value="{{ author.country }}">
+
+                <label>Biography</label>
+                <textarea name="biography">{{ author.biography }}</textarea>
+
+                <label>Achievements</label>
+                <textarea name="achievements">{{ author.achievements }}</textarea>
+
+                <button type="submit">Update Author</button>
+
+            </form>
+
+            <a class="back-btn" href="/admin/authors">
+                ← Back to Authors
+            </a>
+
+        </div>
+
+    </div>
+
+</body>
+</html>
