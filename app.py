@@ -315,17 +315,13 @@ def borrow_book(id):
 
     msg.html = f"""
     <h2>📚 SCHOOL OF MINES DIGITAL LIBRARY</h2>
-
     <p>Hello <b>{student_name}</b>,</p>
-
     <ul>
         <li><b>Book:</b> {book.title}</li>
         <li><b>Borrow Date:</b> {formatted_borrow}</li>
         <li><b>Due Date:</b> {formatted_due}</li>
     </ul>
-
     <p>Please return before due date.</p>
-
     <p>
     Regards,<br>
     <b>SCHOOL OF MINES DIGITAL LIBRARY</b>
