@@ -90,6 +90,10 @@ def logout():
     session.pop("admin", None)
     return redirect("/admin")
 
+# ===========================
+# ADMIN DASHBOARD
+# ===========================
+
 @app.route("/admin/dashboard")
 def admin_dashboard():
     if "admin" not in session:
@@ -97,6 +101,139 @@ def admin_dashboard():
     authors = Author.query.all()
     books = Book.query.all()
     return render_template("admin.html", authors=authors, books=books)
+
+# ===========================
+# AUTHOR ROUTES
+# ===========================
+
+@app.route("/admin/authors")
+def view_authors():
+    if "admin" not in session:
+        return redirect("/admin")
+    authors = Author.query.all()
+    return render_template("authors_list.html", authors=authors)
+
+@app.route("/admin/add-author")
+def add_author_page():
+    if "admin" not in session:
+        return redirect("/admin")
+    return render_template("add_author.html")
+
+@app.route("/admin/save-author", methods=["POST"])
+def save_author():
+    if "admin" not in session:
+        return redirect("/admin")
+
+    new_author = Author(
+        full_name=request.form["full_name"],
+        date_of_birth=request.form["date_of_birth"],
+        country=request.form["country"],
+        biography=request.form["biography"],
+        achievements=request.form["achievements"]
+    )
+
+    db.session.add(new_author)
+    db.session.commit()
+    return redirect("/admin/authors")
+
+@app.route("/admin/edit-author/<int:id>")
+def edit_author(id):
+    if "admin" not in session:
+        return redirect("/admin")
+    author = Author.query.get_or_404(id)
+    return render_template("edit_author.html", author=author)
+
+@app.route("/admin/update-author/<int:id>", methods=["POST"])
+def update_author(id):
+    if "admin" not in session:
+        return redirect("/admin")
+
+    author = Author.query.get_or_404(id)
+    author.full_name = request.form["full_name"]
+    author.date_of_birth = request.form["date_of_birth"]
+    author.country = request.form["country"]
+    author.biography = request.form["biography"]
+    author.achievements = request.form["achievements"]
+
+    db.session.commit()
+    return redirect("/admin/authors")
+
+# ===========================
+# BOOK ROUTES
+# ===========================
+
+@app.route("/admin/books")
+def view_books():
+    if "admin" not in session:
+        return redirect("/admin")
+    books = Book.query.all()
+    return render_template("book_list.html", books=books)
+
+@app.route("/admin/add-book")
+def add_book_page():
+    if "admin" not in session:
+        return redirect("/admin")
+    authors = Author.query.all()
+    return render_template("add_book.html", authors=authors)
+
+@app.route("/admin/save-book", methods=["POST"])
+def save_book():
+    if "admin" not in session:
+        return redirect("/admin")
+
+    file = request.files.get("cover_image")
+    filename = ""
+
+    if file and file.filename != "":
+        filename = secure_filename(file.filename)
+        file.save(os.path.join(app.config["UPLOAD_FOLDER"], filename))
+
+    new_book = Book(
+        title=request.form["title"],
+        description=request.form["description"],
+        quantity=int(request.form["quantity"]),
+        cover_image=filename,
+        author_id=int(request.form["author_id"])
+    )
+
+    db.session.add(new_book)
+    db.session.commit()
+    return redirect("/admin/books")
+
+@app.route("/admin/delete-book/<int:id>")
+def delete_book(id):
+    if "admin" not in session:
+        return redirect("/admin")
+    book = Book.query.get_or_404(id)
+    db.session.delete(book)
+    db.session.commit()
+    return redirect("/admin/books")
+
+# ===========================
+# BORROW HISTORY
+# ===========================
+
+@app.route("/admin/history")
+def admin_history():
+    if "admin" not in session:
+        return redirect("/admin")
+    borrows = Borrow.query.order_by(Borrow.id.desc()).all()
+    return render_template("history.html", borrows=borrows)
+
+# ===========================
+# REMINDERS
+# ===========================
+
+@app.route("/admin/reminders")
+def admin_reminders():
+    if "admin" not in session:
+        return redirect("/admin")
+
+    tomorrow = (datetime.now() + timedelta(days=1)).strftime("%d %b %Y")
+    borrows = Borrow.query.all()
+    due_tomorrow = [record for record in borrows if tomorrow in record.due_date]
+
+    return render_template("reminders.html", records=due_tomorrow)
 
 # ===========================
 # HOME
@@ -112,7 +249,24 @@ def home():
     return render_template("home.html", books=books)
 
 # ===========================
-# BORROW + EMAIL (FIXED)
+# BOOK DETAIL
+# ===========================
+
+@app.route("/book/<int:id>")
+def book_detail(id):
+    book = Book.query.get_or_404(id)
+    borrow_date = datetime.now()
+    due_date = borrow_date + timedelta(days=7)
+
+    return render_template(
+        "book_detail.html",
+        book=book,
+        borrow_date=borrow_date.strftime("%d %b %Y %I:%M %p"),
+        due_date=due_date.strftime("%d %b %Y %I:%M %p")
+    )
+
+# ===========================
+# BORROW + EMAIL
 # ===========================
 
 @app.route("/borrow/<int:id>", methods=["POST"])
@@ -152,19 +306,16 @@ def borrow_book(id):
         )
 
         msg.html = f"""
-<h2>📚 SCHOOL OF MINES DIGITAL LIBRARY</h2>
-<p>Hello <b>{student_name}</b>,</p>
-<ul>
-    <li><b>Book:</b> {book.title}</li>
-    <li><b>Borrow Date:</b> {formatted_borrow}</li>
-    <li><b>Due Date:</b> {formatted_due}</li>
-</ul>
-<p>Please return before due date.</p>
-<p>
-Regards,<br>
-<b>SCHOOL OF MINES DIGITAL LIBRARY</b>
-</p>
-"""
+        <h2>📚 SCHOOL OF MINES DIGITAL LIBRARY</h2>
+        <p>Hello <b>{student_name}</b>,</p>
+        <ul>
+            <li><b>Book:</b> {book.title}</li>
+            <li><b>Borrow Date:</b> {formatted_borrow}</li>
+            <li><b>Due Date:</b> {formatted_due}</li>
+        </ul>
+        <p>Please return before due date.</p>
+        <p>Regards,<br><b>SCHOOL OF MINES DIGITAL LIBRARY</b></p>
+        """
 
         mail.send(msg)
 
