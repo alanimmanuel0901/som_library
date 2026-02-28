@@ -310,7 +310,7 @@ def borrow_book(id):
         msg = Message(
             "📚 SCHOOL OF MINES DIGITAL LIBRARY - Borrow Confirmation",
             sender=app.config['MAIL_USERNAME'],
-            recipients=[student_email, app.config['MAIL_USERNAME']]
+            recipients=[student_email]
         )
 
         msg.html = f"""
