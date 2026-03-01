@@ -291,8 +291,8 @@ def admin_reminders():
 # BORROW + EMAIL
 # ===========================
 
-@app.route("/borrow/<int:book_id>", methods=["POST"])
-def borrow(book_id):
+@app.route("/borrow/<int:id>", methods=["POST"])
+def borrow_book(id):
     book = Book.query.get_or_404(book_id)
 
     if book.quantity > 0:
