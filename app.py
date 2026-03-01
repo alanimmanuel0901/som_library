@@ -300,10 +300,12 @@ def borrow_book(id):
         student_name = request.form["student_name"]
         student_phone = request.form["student_phone"]
 
-        borrow_date = datetime.now().strftime("%d %b %Y %I:%M %p")
-        due_date = (datetime.now() + timedelta(days=7)).strftime("%d %b %Y %I:%M %p")
+        ist_now = datetime.utcnow() + timedelta(hours=5, minutes=30)
 
-        # 🔥 Reduce quantity
+        borrow_date = ist_now.strftime("%d %b %Y %I:%M %p")
+        due_date = (ist_now + timedelta(days=7)).strftime("%d %b %Y %I:%M %p")
+
+        # Reduce quantity
         book.quantity -= 1
 
         new_borrow = Borrow(
@@ -315,8 +317,6 @@ def borrow_book(id):
         )
 
         db.session.add(new_borrow)
-
-        # 🔥 SAVE CHANGES
         db.session.commit()
 
         # Send WhatsApp
