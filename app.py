@@ -4,6 +4,7 @@ from flask_mail import Mail, Message
 from werkzeug.utils import secure_filename
 from datetime import datetime, timedelta
 from twilio.twiml.messaging_response import MessagingResponse
+from twilio.rest import Client
 import os
 
 app = Flask(__name__)
@@ -28,6 +29,23 @@ app.config['MAIL_USERNAME'] = os.environ.get("MAIL_USERNAME")
 app.config['MAIL_PASSWORD'] = os.environ.get("MAIL_PASSWORD")
 
 mail = Mail(app)
+
+# ===========================
+# TWILIO CONFIGURATION
+# ===========================
+
+TWILIO_SID = os.environ.get("TWILIO_ACCOUNT_SID")
+TWILIO_TOKEN = os.environ.get("TWILIO_AUTH_TOKEN")
+TWILIO_WHATSAPP = "whatsapp:+14155238886"  # Twilio Sandbox
+
+client = Client(TWILIO_SID, TWILIO_TOKEN)
+
+def send_whatsapp(to, message):
+    client.messages.create(
+        body=message,
+        from_=TWILIO_WHATSAPP,
+        to=f"whatsapp:{to}"
+    )
 
 # ===========================
 # UPLOAD FOLDER
@@ -63,9 +81,16 @@ class Book(db.Model):
 class Borrow(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     student_name = db.Column(db.String(200))
-    student_email = db.Column(db.String(200))
+    student_phone = db.Column(db.String(20))
     borrow_date = db.Column(db.String(100))
     due_date = db.Column(db.String(100))
+    book_id = db.Column(db.Integer, db.ForeignKey("book.id"))
+    book = db.relationship("Book")
+
+class Waiting(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    student_name = db.Column(db.String(200))
+    student_phone = db.Column(db.String(20))
     book_id = db.Column(db.Integer, db.ForeignKey("book.id"))
     book = db.relationship("Book")
 
@@ -274,8 +299,11 @@ def borrow_book(id):
     if book.quantity <= 0:
         return redirect(f"/book/{id}")
 
-    student_name = request.form["student_name"]
-    student_email = request.form["student_email"]
+    student_name = request.form.get("student_name")
+    student_phone = request.form.get("student_phone")
+
+    if not student_name or not student_phone:
+        return "Missing name or phone number", 400
 
     borrow_date = datetime.now()
     due_date = borrow_date + timedelta(days=7)
@@ -285,7 +313,7 @@ def borrow_book(id):
 
     new_borrow = Borrow(
         student_name=student_name,
-        student_email=student_email,
+        student_phone=student_phone,
         borrow_date=formatted_borrow,
         due_date=formatted_due,
         book_id=id
@@ -295,29 +323,21 @@ def borrow_book(id):
     db.session.add(new_borrow)
     db.session.commit()
 
+    # Send WhatsApp
     try:
-        msg = Message(
-            "📚 SCHOOL OF MINES DIGITAL LIBRARY - Borrow Confirmation",
-            sender=app.config['MAIL_USERNAME'],
-            recipients=[student_email]
+        send_whatsapp(
+            student_phone,
+            f"""📚 SCHOOL OF MINES DIGITAL LIBRARY
+
+Hello {student_name}
+
+Book: {book.title}
+Due Date: {formatted_due}
+
+Thank you!"""
         )
-
-        msg.html = f"""
-        <h2>📚 SCHOOL OF MINES DIGITAL LIBRARY</h2>
-        <p>Hello <b>{student_name}</b>,</p>
-        <ul>
-            <li><b>Book:</b> {book.title}</li>
-            <li><b>Borrow Date:</b> {formatted_borrow}</li>
-            <li><b>Due Date:</b> {formatted_due}</li>
-        </ul>
-        <p>Please return before due date.</p>
-        <p>Regards,<br><b>SCHOOL OF MINES DIGITAL LIBRARY</b></p>
-        """
-
-        mail.send(msg)
-
     except Exception as e:
-        print("Email Error:", str(e))
+        print("WhatsApp Error:", e)
 
     return redirect("/")
 

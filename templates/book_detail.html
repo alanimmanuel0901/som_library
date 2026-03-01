@@ -84,6 +84,12 @@
         hr {
             margin: 25px 0;
         }
+
+        .note {
+            font-size: 14px;
+            color: #555;
+            margin-top: 5px;
+        }
     </style>
 </head>
 <body>
@@ -133,11 +139,26 @@
         <p><strong>Due Date:</strong> {{ due_date }}</p>
 
         {% if book.quantity > 0 %}
-        <form method="POST" action="/borrow/{{ book.id }}">
-            <input type="text" name="student_name" placeholder="Enter Your Name" required>
-            <input type="email" name="student_email" placeholder="Enter Your Email" required>
-            <button type="submit">Borrow Book</button>
-        </form>
+            <form action="{{ url_for('borrow_book', id=book.id) }}" method="POST">
+
+                <input type="text"
+                       name="student_name"
+                       placeholder="Enter Your Name"
+                       required>
+
+                <input type="text"
+                       name="student_phone"
+                       placeholder="Enter Mobile Number (+91XXXXXXXXXX)"
+                       pattern="^\+?[0-9]{10,15}$"
+                       required>
+
+                <div class="note">
+                    Enter number with country code. Example: +919876543210
+                </div>
+
+                <button type="submit">Borrow Book</button>
+
+            </form>
         {% else %}
             <p class="not-available">This book is currently unavailable.</p>
         {% endif %}
