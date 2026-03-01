@@ -291,53 +291,46 @@ def admin_reminders():
 # BORROW + EMAIL
 # ===========================
 
-@app.route("/borrow/<int:id>", methods=["POST"])
-def borrow_book(id):
+@app.route("/borrow/<int:book_id>", methods=["POST"])
+def borrow(book_id):
+    book = Book.query.get_or_404(book_id)
 
-    book = Book.query.get_or_404(id)
+    if book.quantity > 0:
 
-    if book.quantity <= 0:
-        return redirect(f"/book/{id}")
+        student_name = request.form["student_name"]
+        student_phone = request.form["student_phone"]
 
-    student_name = request.form.get("student_name")
-    student_phone = request.form.get("student_phone")
+        borrow_date = datetime.now().strftime("%d %b %Y %I:%M %p")
+        due_date = (datetime.now() + timedelta(days=7)).strftime("%d %b %Y %I:%M %p")
 
-    if not student_name or not student_phone:
-        return "Missing name or phone number", 400
+        # 🔥 Reduce quantity
+        book.quantity -= 1
 
-    borrow_date = datetime.now()
-    due_date = borrow_date + timedelta(days=7)
-
-    formatted_borrow = borrow_date.strftime("%d %b %Y %I:%M %p")
-    formatted_due = due_date.strftime("%d %b %Y %I:%M %p")
-
-    new_borrow = Borrow(
-        student_name=student_name,
-        student_phone=student_phone,
-        borrow_date=formatted_borrow,
-        due_date=formatted_due,
-        book_id=id
-    )
-
-    book.quantity -= 1
-    db.session.add(new_borrow)
-    db.session.commit()
-
-    # Send WhatsApp
-    try:
-        send_whatsapp(
-            student_phone,
-            f"""📚 SCHOOL OF MINES DIGITAL LIBRARY
-
-Hello {student_name}
-
-Book: {book.title}
-Due Date: {formatted_due}
-
-Thank you!"""
+        new_borrow = Borrow(
+            student_name=student_name,
+            student_phone=student_phone,
+            borrow_date=borrow_date,
+            due_date=due_date,
+            book_id=book.id
         )
-    except Exception as e:
-        print("WhatsApp Error:", e)
+
+        db.session.add(new_borrow)
+
+        # 🔥 SAVE CHANGES
+        db.session.commit()
+
+        # Send WhatsApp
+        message = f"""
+📚 SCHOOL OF MINES DIGITAL LIBRARY
+
+Hello {student_name},
+
+📖 Book: {book.title}
+📅 Due Date: {due_date}
+
+Thank you!
+"""
+        send_whatsapp(student_phone, message)
 
     return redirect("/")
 
