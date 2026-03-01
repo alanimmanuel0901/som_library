@@ -4,32 +4,42 @@
 <title>Borrow History</title>
 <style>
 body{
-font-family:Arial;
-background:linear-gradient(120deg,#e3f2fd,#ffffff);
-padding:40px;
+    font-family: Arial, sans-serif;
+    background: linear-gradient(120deg,#e3f2fd,#ffffff);
+    padding:40px;
 }
 .card{
-background:white;
-padding:20px;
-margin-bottom:15px;
-border-radius:10px;
-box-shadow:0 2px 8px rgba(0,0,0,0.1);
+    background:white;
+    padding:20px;
+    margin-bottom:15px;
+    border-radius:10px;
+    box-shadow:0 2px 8px rgba(0,0,0,0.1);
 }
-h1{color:#0d47a1;}
+h1{
+    color:#0d47a1;
+}
+.label{
+    font-weight:bold;
+}
 </style>
 </head>
 <body>
 
 <h1>📊 Borrow History – SCHOOL OF MINES</h1>
 
-{% for b in borrows %}
-<div class="card">
-<b>Email:</b> {{ b.student_email }} <br>
-<b>Book:</b> {{ b.book.title }} <br>
-<b>Borrow Date:</b> {{ b.borrow_date }} <br>
-<b>Due Date:</b> {{ b.due_date }}
-</div>
-{% endfor %}
+{% if borrows %}
+    {% for b in borrows %}
+    <div class="card">
+        <div><span class="label">👤 Name:</span> {{ b.student_name }}</div>
+        <div><span class="label">📱 Phone:</span> {{ b.student_phone }}</div>
+        <div><span class="label">📖 Book:</span> {{ b.book.title }}</div>
+        <div><span class="label">📅 Borrow Date:</span> {{ b.borrow_date }}</div>
+        <div><span class="label">⏳ Due Date:</span> {{ b.due_date }}</div>
+    </div>
+    {% endfor %}
+{% else %}
+    <p>No borrow records found.</p>
+{% endif %}
 
 </body>
 </html>
