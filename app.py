@@ -3,6 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_mail import Mail, Message
 from werkzeug.utils import secure_filename
 from datetime import datetime, timedelta
+from twilio.twiml.messaging_response import MessagingResponse
 import os
 
 app = Flask(__name__)
@@ -27,6 +28,7 @@ app.config['MAIL_USERNAME'] = os.environ.get("MAIL_USERNAME")
 app.config['MAIL_PASSWORD'] = os.environ.get("MAIL_PASSWORD")
 
 mail = Mail(app)
+
 # ===========================
 # UPLOAD FOLDER
 # ===========================
@@ -68,6 +70,36 @@ class Borrow(db.Model):
     book = db.relationship("Book")
 
 # ===========================
+# HOME
+# ===========================
+
+@app.route("/")
+def home():
+    query = request.args.get("search")
+    if query:
+        books = Book.query.filter(Book.title.ilike(f"%{query}%")).all()
+    else:
+        books = Book.query.all()
+    return render_template("home.html", books=books)
+
+# ===========================
+# BOOK DETAIL
+# ===========================
+
+@app.route("/book/<int:id>")
+def book_detail(id):
+    book = Book.query.get_or_404(id)
+    borrow_date = datetime.now()
+    due_date = borrow_date + timedelta(days=7)
+
+    return render_template(
+        "book_detail.html",
+        book=book,
+        borrow_date=borrow_date.strftime("%d %b %Y %I:%M %p"),
+        due_date=due_date.strftime("%d %b %Y %I:%M %p")
+    )
+
+# ===========================
 # ADMIN LOGIN
 # ===========================
 
@@ -88,10 +120,6 @@ def admin_login():
 def logout():
     session.pop("admin", None)
     return redirect("/admin")
-
-# ===========================
-# ADMIN DASHBOARD
-# ===========================
 
 @app.route("/admin/dashboard")
 def admin_dashboard():
@@ -209,7 +237,7 @@ def delete_book(id):
     return redirect("/admin/books")
 
 # ===========================
-# BORROW HISTORY
+# HISTORY
 # ===========================
 
 @app.route("/admin/history")
@@ -233,36 +261,6 @@ def admin_reminders():
     due_tomorrow = [record for record in borrows if tomorrow in record.due_date]
 
     return render_template("reminders.html", records=due_tomorrow)
-
-# ===========================
-# HOME
-# ===========================
-
-@app.route("/")
-def home():
-    query = request.args.get("search")
-    if query:
-        books = Book.query.filter(Book.title.ilike(f"%{query}%")).all()
-    else:
-        books = Book.query.all()
-    return render_template("home.html", books=books)
-
-# ===========================
-# BOOK DETAIL
-# ===========================
-
-@app.route("/book/<int:id>")
-def book_detail(id):
-    book = Book.query.get_or_404(id)
-    borrow_date = datetime.now()
-    due_date = borrow_date + timedelta(days=7)
-
-    return render_template(
-        "book_detail.html",
-        book=book,
-        borrow_date=borrow_date.strftime("%d %b %Y %I:%M %p"),
-        due_date=due_date.strftime("%d %b %Y %I:%M %p")
-    )
 
 # ===========================
 # BORROW + EMAIL
@@ -298,9 +296,6 @@ def borrow_book(id):
     db.session.commit()
 
     try:
-        print("MAIL USERNAME:", app.config['MAIL_USERNAME'])
-        print("MAIL PASSWORD:", app.config['MAIL_PASSWORD'])
-
         msg = Message(
             "📚 SCHOOL OF MINES DIGITAL LIBRARY - Borrow Confirmation",
             sender=app.config['MAIL_USERNAME'],
@@ -316,10 +311,7 @@ def borrow_book(id):
             <li><b>Due Date:</b> {formatted_due}</li>
         </ul>
         <p>Please return before due date.</p>
-        <p>
-        Regards,<br>
-        <b>SCHOOL OF MINES DIGITAL LIBRARY</b>
-        </p>
+        <p>Regards,<br><b>SCHOOL OF MINES DIGITAL LIBRARY</b></p>
         """
 
         mail.send(msg)
@@ -328,6 +320,16 @@ def borrow_book(id):
         print("Email Error:", str(e))
 
     return redirect("/")
+
+# ===========================
+# WHATSAPP ROUTE
+# ===========================
+
+@app.route("/whatsapp", methods=["POST"])
+def whatsapp():
+    response = MessagingResponse()
+    response.message("📚 SCHOOL OF MINES DIGITAL LIBRARY\n\nYour message received successfully ✅")
+    return str(response)
 
 # ===========================
 # CREATE DATABASE
@@ -339,8 +341,6 @@ with app.app_context():
 # ===========================
 # RUN
 # ===========================
-
-import os
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 10000)))
